@@ -1,2 +1,9 @@
 # Binaries
 vecadd
+vecmax
+rgb2gray
+blur
+mm
+
+# .o files
+*.o
