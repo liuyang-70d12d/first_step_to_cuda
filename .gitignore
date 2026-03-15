@@ -4,6 +4,8 @@ vecmax
 rgb2gray
 blur
 mm
+mm-tiled
+mm-tiled-coarse
 
 # .o files
 *.o

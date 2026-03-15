@@ -4,22 +4,41 @@
 
 void mm_cpu(float *A, float *B, float *C, unsigned int M, unsigned int N, unsigned int K)
 {
-    for (unsigned int row = 0; row < M; ++row)
+    unsigned int TILE_DIM = 32;
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+    for (unsigned int rowTile = 0; rowTile < (M + TILE_DIM - 1) / TILE_DIM; ++rowTile)
     {
-        for (unsigned int col = 0; col < N; ++col)
+        for (unsigned int colTile = 0; colTile < (N + TILE_DIM - 1) / TILE_DIM; ++colTile)
         {
-            float sum = 0.0f;
-            for (unsigned int i = 0; i < K; ++i)
+            for (unsigned int iTile = 0; iTile < (K + TILE_DIM - 1) / TILE_DIM; ++iTile)
             {
-                sum += A[row * K + i] * B[i * N + col];
+                for (unsigned int row = rowTile * TILE_DIM; row < MIN((rowTile + 1) * TILE_DIM, M); ++row)
+                {
+                    for (unsigned int col = colTile * TILE_DIM; col < MIN((colTile + 1) * TILE_DIM, N); ++col)
+                    {
+                        float sum = 0.0f;
+                        for (unsigned int i = iTile * TILE_DIM; i < MIN((iTile + 1) * TILE_DIM, K); ++i)
+                        {
+                            sum += A[row * K + i] * B[i * N + col];
+                        }
+                        if (iTile == 0)
+                        {
+                            C[row * N + col] = sum;
+                        }
+                        else
+                        {
+                            C[row * N + col] += sum;
+                        }
+                    }
+                }
             }
-            C[row * N + col] = sum;
         }
     }
 }
 
 int main(int argc, char **argv)
 {
+
     cudaDeviceSynchronize();
 
     // Allocate memory and initialize data

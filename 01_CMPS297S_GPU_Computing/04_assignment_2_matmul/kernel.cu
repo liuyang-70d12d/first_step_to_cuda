@@ -13,15 +13,11 @@
 
 __global__ void mm_kernel(float *A, float *B, float *C, unsigned int M, unsigned int N, unsigned int K)
 {
-
-    // TODO
-
     unsigned int row = blockIdx.y * blockDim.y + threadIdx.y;
     unsigned int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (row < M && col < N)
     {
-
         float dot_product = 0.0f;
 
         for (unsigned int i = 0; i < K; i++)
